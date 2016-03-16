@@ -65,6 +65,29 @@ namespace <#= GetNamespace(DefaultNamespace, template)#>
 	public partial interface <#= AsInterfaceName(template.Name) #> : IGlassBase <#=GetObjectInheritanceDefinition(DefaultNamespace, template, true, (string s) => AsInterfaceName(s))#>
 	{
 			<#foreach(SitecoreField field in GetFieldsForTemplate(template, false)){#>
+				<#if(field.Type.ToLower() == "rich text"){#>
+					/// <summary>
+					/// The <#=field.Name#> field.
+					/// <para><#= GetValue(field.SitecoreFields, "__Short description")#></para>
+					/// <para>Field Type: <#=field.Type#></para>		
+					/// <para>Field ID: <#=field.ID.ToString()#></para>
+					/// <para>Custom Data: <#=field.Data#></para>
+					/// </summary>
+					[SitecoreField(<#= AsInterfaceName(template.Name) #>Constants.<#= GetPropertyName(field) #>FieldName, ReadOnly = true)]
+					<#=GetGlassFieldType(field)#> <#= GetPropertyName(field) #>  {get; set;}
+
+					/// <summary>
+					/// The <#=field.Name#> field IN RAW FORMAT.
+					/// <para><#= GetValue(field.SitecoreFields, "__Short description")#></para>
+					/// <para>Field Type: <#=field.Type#></para>		
+					/// <para>Field ID: <#=field.ID.ToString()#></para>
+					/// <para>Custom Data: <#=field.Data#></para>
+					/// </summary>
+					[SitecoreField(<#= AsInterfaceName(template.Name) #>Constants.<#= GetPropertyName(field) #>FieldName, Setting = SitecoreFieldSettings.RichTextRaw)]
+					<#=GetGlassFieldType(field)#> <#= GetPropertyName(field) #>_Raw  {get; set;}
+				<#}#>
+
+				<#if(field.Type.ToLower() != "rich text"){#>
 					/// <summary>
 					/// The <#=field.Name#> field.
 					/// <para><#= GetValue(field.SitecoreFields, "__Short description")#></para>
@@ -74,7 +97,7 @@ namespace <#= GetNamespace(DefaultNamespace, template)#>
 					/// </summary>
 					[SitecoreField(<#= AsInterfaceName(template.Name) #>Constants.<#= GetPropertyName(field) #>FieldName)]
 					<#=GetGlassFieldType(field)#> <#= GetPropertyName(field) #>  {get; set;}
-			
+				<#}#>				
 			<#}#>
 	}
 
@@ -108,6 +131,31 @@ if (!IsInterfaceWord(template.Name)){ #>
 	{
 	   
 		<#foreach(SitecoreField field in GetFieldsForTemplate(template, true)){#>
+			<#if(field.Type.ToLower() == "rich text"){#>
+				/// <summary>
+				/// The <#=field.Name#> field.
+				/// <para><#= GetValue(field.SitecoreFields, "__Short description")#></para>
+				/// <para>Field Type: <#=field.Type#></para>		
+				/// <para>Field ID: <#=field.ID.ToString()#></para>
+				/// <para>Custom Data: <#=field.Data#></para>
+				/// </summary>
+				[global::System.CodeDom.Compiler.GeneratedCodeAttribute("<#=Tool#>", "<#=ToolVersion#>")]
+				[SitecoreField(<#= AsInterfaceName(template.Name) #>Constants.<#= GetPropertyName(field) #>FieldName, ReadOnly = true)]
+				public virtual <#=GetGlassFieldType(field)#> <#= GetPropertyName(field) #>  {get; set;}
+
+				/// <summary>
+				/// The <#=field.Name#> field IN RAW FORMAT.
+				/// <para><#= GetValue(field.SitecoreFields, "__Short description")#></para>
+				/// <para>Field Type: <#=field.Type#></para>		
+				/// <para>Field ID: <#=field.ID.ToString()#></para>
+				/// <para>Custom Data: <#=field.Data#></para>
+				/// </summary>
+				[global::System.CodeDom.Compiler.GeneratedCodeAttribute("<#=Tool#>", "<#=ToolVersion#>")]
+				[SitecoreField(<#= AsInterfaceName(template.Name) #>Constants.<#= GetPropertyName(field) #>FieldName, Setting = SitecoreFieldSettings.RichTextRaw)]
+				public virtual <#=GetGlassFieldType(field)#> <#= GetPropertyName(field) #>_Raw  {get; set;}
+			<#}#>
+			
+			<#if(field.Type.ToLower() != "rich text"){#>
 				/// <summary>
 				/// The <#=field.Name#> field.
 				/// <para><#= GetValue(field.SitecoreFields, "__Short description")#></para>
@@ -118,7 +166,7 @@ if (!IsInterfaceWord(template.Name)){ #>
 				[global::System.CodeDom.Compiler.GeneratedCodeAttribute("<#=Tool#>", "<#=ToolVersion#>")]
 				[SitecoreField(<#= AsInterfaceName(template.Name) #>Constants.<#= GetPropertyName(field) #>FieldName)]
 				public virtual <#=GetGlassFieldType(field)#> <#= GetPropertyName(field) #>  {get; set;}
-					
+			<#}#>	
 		<#}#>	
 	}
 <#}#>
